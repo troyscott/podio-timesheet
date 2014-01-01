@@ -1,12 +1,40 @@
 
 console.log('ready ...');
-var getCookies = document.cookie;
-console.log(getCookies);
+var appCookies = document.cookie;
+console.log(appCookies);
 
-if (getCookies) {
- console.log('has cookies');
+if (appCookies) {
+  console.log('Cookies ...');
+  console.log(getCookie('auth'));
+      
+}
+
+if (getCookie('auth') == 'true') {
+ console.log('User is logged in ...');
+ $('#menu').show(); 
+ $('#menu_settings').show();  
+ $('#user').replaceWith('<a id="user" href="/logout">Logout</a>');  
+} else
+{
+  $('#menu').hide(); 
+  $('#menu_settings').hide();
+  $('#menu_timesheet').hide(); 
+  $('#user').replaceWith('<a id="user" href="/login">Login</a>');  
   
 }
+
+function getCookie(cname)
+{
+var name = cname + "=";
+var ca = document.cookie.split(';');
+for(var i=0; i<ca.length; i++) 
+  {
+  var c = ca[i].trim();
+  if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+  }
+return "";
+}
+
 
 function listTimesheets() {  
   var timesheets = [];
@@ -96,6 +124,27 @@ function timesheetList(data, selector) {
 }
 
 
+function getWorkspaces(){
+  
+  $.ajax({
+      type: "GET",
+      dataType: "json",
+      url: "/organizations"}).
+      done(function(data, status) {
+        console.log(status);
+        console.log(data);
+        
+
+      }). // done
+      fail(function() {
+        console.log('fail');
+        alert("Please login");
+      });
+  
+}
+
+
+
 function addTimesheet() {
   console.log('add timesheet ...');
   $('#timesheet').hide();
@@ -103,12 +152,16 @@ function addTimesheet() {
   
 }
 
+
+
 function home() {
   console.log('home');
   $('#add').hide();
   $('#timesheet').hide();
+
   
 }
+
 
 Path.map("#/home").to(home);
 Path.map("#/list").to(listTimesheets);
@@ -116,6 +169,7 @@ Path.map("#/add").to(addTimesheet);
 Path.map("#/edit/:item").to(function(){
     alert("Timesheet: " + this.params['item']);
 });
+Path.map("#/workspaces").to(getWorkspaces);
 
 Path.root("#/home");
 Path.listen();
