@@ -19,6 +19,8 @@ if (getCookie('auth') == 'true') {
   $('#menu').hide(); 
   $('#menu_settings').hide();
   $('#menu_timesheet').hide(); 
+  $('#add').hide();
+  $('#timesheet').hide();
   $('#user').replaceWith('<a id="user" href="/login">Login</a>');  
   
 }
@@ -36,7 +38,8 @@ return "";
 }
 
 
-function listTimesheets() {  
+function listTimesheets() { 
+  $('#list').load('list.html', function(){
   var timesheets = [];
   $('#add').hide();
   $.ajax({
@@ -89,7 +92,7 @@ function listTimesheets() {
           
         }); // timesheets
         
-       timesheetList(timesheets, 'tbody');
+       timesheetTable(timesheets, 'tbody');
         
       }). // done
       fail(function() {
@@ -98,10 +101,11 @@ function listTimesheets() {
         alert("Please login");
       });
 
+  }); // load
 
 } // listTimesheets
 
-function timesheetList(data, selector) {
+function timesheetTable(data, selector) {
   $.each(data, function(index, row){
     console.log(row);
     var items = []
@@ -126,20 +130,43 @@ function timesheetList(data, selector) {
 
 function getWorkspaces(){
   
-  $.ajax({
+  $('#org').load('workspaces.html', function(){
+    $.ajax({
       type: "GET",
       dataType: "json",
       url: "/organizations"}).
       done(function(data, status) {
         console.log(status);
         console.log(data);
+        // loop through the array of organizations
+        var items = [];
+        items.push('<select id="select_workspace">');
+        $.each(data, function(index, org){
+          console.log(org.name);
+          console.log(org.org_id);
+          console.log(org.spaces);
+          $.each(org.spaces, function(key,space) {
+            console.log(space.name);
+            console.log(space.space_id);
+            //<option value="husker">Husker</option>
+            items.push('<option value="' + space.space_id + '">');
+            items.push(org.name + ' - ' + space.name);
+            items.push('</option>'); 
+          });
+          
+          }); // each
         
-
+          items.push('</select>');
+          console.log(items);
+          $(items.join('')).appendTo('#workspaces');
       }). // done
       fail(function() {
         console.log('fail');
         alert("Please login");
       });
+    
+    
+  }); // load
   
 }
 
@@ -148,6 +175,7 @@ function getWorkspaces(){
 function addTimesheet() {
   console.log('add timesheet ...');
   $('#timesheet').hide();
+  $('#add').load('add.html');
   $('#add').show();
   
 }
@@ -158,10 +186,25 @@ function home() {
   console.log('home');
   $('#add').hide();
   $('#timesheet').hide();
-
+  //$('#add').load('index.html');
   
 }
 
+Path.map("#/apps").to(function() {
+  workspaceId = $('#select_workspace').val();
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    url: "/apps?id=" + workspaceId}).
+    done(function(data, status) {
+     console.log('success');
+      console.log(data);
+      }).
+      fail(function() {
+         console.log('fail');
+      });
+  
+});
 
 Path.map("#/home").to(home);
 Path.map("#/list").to(listTimesheets);

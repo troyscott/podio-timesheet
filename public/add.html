@@ -1,0 +1,36 @@
+  <h3>Simple Project Timesheet</h3>
+    <br>
+    <form action="/addTimesheet" method="post">
+ 
+    <div class="row">
+      <div class="large-6 columns">
+        <label>Title:</label>
+        <input id="add_title" type="text" name="timesheet[title]" placeholder="Enter Title" />
+      </div>
+     <div class="large-6 columns">
+        <label>Date</label>
+        <input id="add_date" type="text" name="timesheet[date]" placeholder="2013/12/26" />
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="large-6 columns">
+        <label>Hours:</label>
+        <input id="add_hours" type="text" name="timesheet[hours]" placeholder="Enter Hours" />
+      </div>
+      <div class="large-6 columns">
+        <label>Rate:</label>
+        <input id="add_rate" type="text" name="timesheet[rate]" placeholder="20.00" />
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="large-10 columns">
+        <label>Description:</label>
+        <input id="add_description" type="text" name="timesheet[description]" placeholder="Description" />
+      </div>
+      <div class="large-2 columns">
+        <button>Save</button>          
+      </div>  
+    </div>
+  </form>  

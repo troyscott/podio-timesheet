@@ -9,8 +9,8 @@ app.use(express.cookieSession());
 
 var clientId = "podio-timesheet";
 var clientSecret = process.env.PODIO_TIMESHEET; 
-//var root = "http://localhost:3000";
-var root = "http://timesheet.tscott.pagekite.me"
+var root = "http://localhost:3000";
+//var root = "http://timesheet.tscott.pagekite.me"
 
 app.get('/login', function(req, res) {
   // Get the authorization code 
@@ -80,14 +80,26 @@ app.get('/organizations', function(req, res) {
   
   request.get(options, function(error, response, body) {
    if (error) console.log(error);
-   console.log(body);
    data = JSON.parse(body);
    res.send(data);
   });
   
 });
 
+// change to a post
+app.get('/apps', function(req, res){
+  //console.log(request.query.app_id);
+  console.log('test ...');
+  console.log(req.query.id);
+  body = '{"status": "OK"}';
+  data= JSON.parse(body);
+  res.send(data);
+  
+});
+
+// place holder for views
           
+// change to a post
 app.get('/timesheets', function(req, res){
 
   //var oauth = 'OAuth2 ' + req.session.access_token;
