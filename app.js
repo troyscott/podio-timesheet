@@ -87,13 +87,39 @@ app.get('/organizations', function(req, res) {
 });
 
 // change to a post
-app.get('/apps', function(req, res){
-  //console.log(request.query.app_id);
-  console.log('test ...');
-  console.log(req.query.id);
-  body = '{"status": "OK"}';
-  data= JSON.parse(body);
-  res.send(data);
+// parameter: spaceId
+// install this app: https://podio.com/market/apps/1249-timesheets
+app.post('/apps', function(req, res){
+ console.log(req.body.workspace_id);
+ // app/space/{space_id}/
+ var url = 'https://api.podio.com/app/space/' + req.body.workspace_id + '/';
+ console.log(url);  
+ var options = {
+    headers: {
+      'authorization': req.session.oauth_header,
+      'content-type':'application/json',
+    },
+    url: url,
+  }
+  console.log('request ...');
+  request.get(options, function(error, response, body) {
+    console.log('if error .. ');
+    if (error) return console.log('error: ' + error);
+    apps = JSON.parse(body);
+    apps = apps.filter(function(item){
+        return (item.url_label == 'timesheets');
+    });
+    console.log(apps[0].app_id);
+    
+    // TODO
+    // request items and check for field values
+    // if fields exist then OK
+    
+    req.session.app_id = apps[0].app_id;
+    res.send(apps[0]);     
+  
+  
+  });
   
 });
 
@@ -101,13 +127,8 @@ app.get('/apps', function(req, res){
           
 // change to a post
 app.get('/timesheets', function(req, res){
-
-  //var oauth = 'OAuth2 ' + req.session.access_token;
-  //console.log('OAuth2: ' + oauth);
-  appId = 6487217;
-  viewId = 6200536;  
-  var url = 'https://api.podio.com/item/app/6487217/filter/6200536/'
   
+  var url = 'https://api.podio.com/item/app/' + req.session.app_id + '/filter/'
   var options = {
     headers: {
       'authorization': req.session.oauth_header,
@@ -125,7 +146,8 @@ request.post(options, function(error, response, body) {
   console.log(data.item);
   res.send(data.items);     
   });
-}); // timesheets/oauth 
+
+}); // timesheets 
 
 
 app.post('/addTimesheet', function(req, res){
@@ -168,5 +190,3 @@ var port = process.env.PORT || 3000;
 app.listen(port, function() {
   console.log("Listening on " + port);
 });
-
-

@@ -129,7 +129,7 @@ function timesheetTable(data, selector) {
 
 
 function getWorkspaces(){
-  
+  $('#timesheet').hide();
   $('#org').load('workspaces.html', function(){
     $.ajax({
       type: "GET",
@@ -148,7 +148,6 @@ function getWorkspaces(){
           $.each(org.spaces, function(key,space) {
             console.log(space.name);
             console.log(space.space_id);
-            //<option value="husker">Husker</option>
             items.push('<option value="' + space.space_id + '">');
             items.push(org.name + ' - ' + space.name);
             items.push('</option>'); 
@@ -190,19 +189,29 @@ function home() {
   
 }
 
+// List of Applications for a Workspace
 Path.map("#/apps").to(function() {
   workspaceId = $('#select_workspace').val();
+  console.log(workspaceId);
   $.ajax({
-    type: "GET",
+    type: "POST",
     dataType: "json",
-    url: "/apps?id=" + workspaceId}).
+    url: "/apps",
+    data: {"workspace_id": workspaceId }
+    }).
     done(function(data, status) {
-     console.log('success');
+      console.log('success');
       console.log(data);
+      console.log('AppId: ' + data.app_id);
+      $('#org').empty();
+      window.location.replace("#/list");
+      
       }).
       fail(function() {
          console.log('fail');
+        
       });
+  
   
 });
 
